@@ -1,0 +1,28 @@
+{
+  "name": "slipsheet-workspace",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Workspace root for the slipsheet monorepo. Two MIT-licensed libraries: @slipsheet/viewer (a standalone PDF.js wrapper) and @slipsheet/hugerte (a HugeRTE editor plugin). See README.md and ARCHITECTURE.md.",
+  "license": "MIT",
+  "author": "Jamie Ontiveros <dev@ontiveros.me>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonto/slipsheet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jonto/slipsheet/issues"
+  },
+  "homepage": "https://github.com/jonto/slipsheet#readme",
+  "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "node bin/build.mjs",
+    "test": "echo 'No tests configured yet.' && exit 0",
+    "serve": "python3 -m http.server 8003"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.0"
+  }
+}

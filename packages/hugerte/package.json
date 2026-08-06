@@ -1,0 +1,42 @@
+{
+  "name": "@slipsheet/hugerte",
+  "version": "0.0.2",
+  "description": "HugeRTE editor plugin that adds a PDF upload button. Inserts standardized .slipsheet markup; pairs with @slipsheet/viewer for rendering. API-compatible with TinyMCE 6 (the last MIT-licensed TinyMCE).",
+  "license": "MIT",
+  "author": "Jamie Ontiveros <dev@ontiveros.me>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonto/slipsheet.git",
+    "directory": "packages/hugerte"
+  },
+  "bugs": {
+    "url": "https://github.com/jonto/slipsheet/issues"
+  },
+  "homepage": "https://github.com/jonto/slipsheet/tree/main/packages/hugerte#readme",
+  "type": "module",
+  "main": "dist/plugin.min.js",
+  "module": "dist/plugin.min.js",
+  "exports": {
+    ".": "./dist/plugin.min.js",
+    "./src/index.js": "./src/index.js",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "keywords": [
+    "hugerte",
+    "hugerte-plugin",
+    "tinymce-6",
+    "slipsheet",
+    "pdf",
+    "embed"
+  ],
+  "peerDependencies": {
+    "hugerte": "^1.0.0"
+  },
+  "scripts": {
+    "test": "echo 'TODO: HugeRTE 1.x + TinyMCE 6 compatibility CI' && exit 0"
+  }
+}

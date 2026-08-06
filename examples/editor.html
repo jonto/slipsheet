@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slipsheet — editor + viewer round trip</title>
+
+  <!-- Slipsheet viewer styles for the preview pane. -->
+  <link rel="stylesheet" href="../packages/viewer/dist/viewer.min.css">
+
+  <!-- HugeRTE editor itself. -->
+  <script src="https://cdn.jsdelivr.net/npm/hugerte@1.0.10/hugerte.min.js"
+          integrity="sha384-8dL//3Q8ynI0YyLXpaQ/Z9S45c+djC2Fb7jGcNzfxWMw4yU8cgy62JhLiunRVAEH"
+          crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 880px;
+      margin: 2rem auto;
+      padding: 0 1.5rem 4rem;
+      line-height: 1.55;
+      color: #2a2820;
+      background: #fafaf6;
+    }
+    h1 { font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+    h2 { font-weight: 600; letter-spacing: -0.015em; margin: 2.5rem 0 0.75rem; font-size: 1.1rem; }
+    p.lede { color: #6a655c; margin: 0 0 2rem; }
+    code, pre {
+      font: 0.85em/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    code {
+      background: #ede9df;
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+    }
+    pre.source {
+      background: #1e1c17;
+      color: #e5e0d6;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+      max-height: 16rem;
+      overflow-y: auto;
+      margin: 0;
+    }
+    .editor-actions {
+      display: flex;
+      gap: 0.5rem;
+      align-items: center;
+      margin: 1rem 0;
+    }
+    .btn {
+      font: 600 0.9rem/1.2 inherit;
+      color: #fafaf6;
+      background: #b65f43;
+      border: 1px solid #b65f43;
+      border-radius: 0.5rem;
+      padding: 0.5rem 1rem;
+      cursor: pointer;
+      transition: background-color 120ms ease-out;
+    }
+    .btn:hover { background: #a3553b; border-color: #a3553b; }
+    .btn:focus-visible { outline: 2px solid #b65f43; outline-offset: 2px; }
+    .btn--secondary {
+      color: #2a2820;
+      background: transparent;
+      border-color: #d4cdbc;
+    }
+    .btn--secondary:hover {
+      background: #ede9df;
+      border-color: #b65f43;
+    }
+    .hint {
+      font-size: 0.85rem;
+      color: #6a655c;
+    }
+  </style>
+</head>
+<body>
+  <h1>Slipsheet — editor + viewer round trip</h1>
+  <p class="lede">HugeRTE editor with the <code>@slipsheet/hugerte</code> plugin installed. Click the document icon in the toolbar to insert a PDF. The preview pane below shows what the markup looks like rendered by <code>@slipsheet/viewer</code>.</p>
+
+  <p class="hint">This demo's upload handler is a no-op that returns <code>URL.createObjectURL(file)</code> (a local blob URL). Real adopters wire <code>slipsheet_upload_handler</code> to their backend upload pipeline (S3, R2, etc).</p>
+
+  <h2>Editor</h2>
+  <textarea id="editor"><h3>Try the Slipsheet plugin</h3><p>Click the document icon in the toolbar above to insert a PDF. After inserting, hit "Render preview" to see how Slipsheet's viewer hydrates the markup.</p></textarea>
+
+  <div class="editor-actions">
+    <button type="button" class="btn" id="refresh">Render preview</button>
+    <button type="button" class="btn btn--secondary" id="show-source">Toggle HTML source</button>
+    <span class="hint">Inserted markup is the standardized <code>&lt;div class="slipsheet"&gt;</code> contract.</span>
+  </div>
+
+  <h2 id="source-heading" hidden>HTML source (what the editor saves)</h2>
+  <pre class="source" id="source" hidden></pre>
+
+  <h2>Rendered preview (what readers see)</h2>
+  <div id="preview" style="min-height: 6rem;">
+    <p class="hint">Insert a PDF in the editor above, then click "Render preview" to see it here.</p>
+  </div>
+
+  <!-- Slipsheet plugin (loaded after HugeRTE so it can register itself). -->
+  <script type="module" src="../packages/hugerte/dist/plugin.min.js"></script>
+
+  <!-- Slipsheet viewer (for the preview pane). -->
+  <script type="module">
+    import { Slipsheet } from '../packages/viewer/dist/viewer.min.js';
+
+    // Configure HugeRTE.
+    hugerte.init({
+      selector: '#editor',
+      license_key: 'gpl',
+      base_url: 'https://cdn.jsdelivr.net/npm/hugerte@1.0.10',
+      suffix: '.min',
+      menubar: false,
+      plugins: 'lists link autolink image code slipsheet',
+      toolbar: 'undo redo | blocks | bold italic | bullist numlist | link image slipsheet | code | removeformat',
+      height: 360,
+      promotion: false,
+      branding: false,
+
+      // Allow our standardized markup through the editor's HTML sanitizer.
+      extended_valid_elements: 'div[class|data-src|data-pages|data-filename|contenteditable],a[href|download|target]',
+      valid_children: '+div[a]',
+
+      // Demo upload handler. In production, this POSTs to a backend upload
+      // route and returns { src, pages, filename }. Here we fake it with a
+      // local blob URL + simulated progress so the demo works offline.
+      slipsheet_upload_handler: (file, progress) => new Promise((resolve) => {
+        let p = 0;
+        const tick = setInterval(() => {
+          p = Math.min(p + 18, 92);
+          progress(p);
+        }, 80);
+
+        setTimeout(() => {
+          clearInterval(tick);
+          progress(100);
+          resolve({
+            src: URL.createObjectURL(file),
+            filename: file.name,
+            // pages: undefined — production handlers detect via pdfinfo
+            // server-side. The viewer handles missing page-count gracefully.
+          });
+        }, 900);
+      }),
+    });
+
+    // Wire up "Render preview" button.
+    const preview = document.getElementById('preview');
+    const source = document.getElementById('source');
+    const sourceHeading = document.getElementById('source-heading');
+
+    document.getElementById('refresh').addEventListener('click', () => {
+      const html = hugerte.activeEditor.getContent();
+      source.textContent = html;
+      preview.innerHTML = html;
+      Slipsheet.init({ lazy: false }); // eager in the demo so result is immediate
+    });
+
+    document.getElementById('show-source').addEventListener('click', () => {
+      const hidden = source.hasAttribute('hidden');
+      if (hidden) {
+        source.removeAttribute('hidden');
+        sourceHeading.removeAttribute('hidden');
+      } else {
+        source.setAttribute('hidden', '');
+        sourceHeading.setAttribute('hidden', '');
+      }
+    });
+  </script>
+</body>
+</html>

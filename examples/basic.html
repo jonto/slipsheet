@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slipsheet — basic example</title>
+  <link rel="stylesheet" href="../packages/viewer/src/viewer.css">
+  <style>
+    /* Minimal page styling for the demo. The host application would
+       supply its own; the viewer doesn't depend on these. */
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      line-height: 1.55;
+      color: #2a2820;
+      background: #fafaf6;
+    }
+    h1 {
+      font-weight: 600;
+      letter-spacing: -0.02em;
+      margin: 0 0 0.5rem;
+    }
+    p.lede {
+      color: #6a655c;
+      margin: 0 0 2rem;
+    }
+    code {
+      background: #ede9df;
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+      font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    p {
+      margin: 1.25rem 0;
+    }
+  </style>
+</head>
+<body>
+  <h1>Slipsheet — basic example</h1>
+  <p class="lede">Phase 1 first slice: discovery + lazy PDF.js + first-page render.</p>
+
+  <p>Below is the markup contract — a plain <code>div</code> with <code>data-*</code> attributes and an embedded download-link fallback. <code>Slipsheet.init()</code> finds it, lazy-loads PDF.js, and renders the first page.</p>
+
+  <div class="slipsheet" data-src="./sample.pdf" data-pages="6" data-filename="tracemonkey.pdf">
+    <a href="./sample.pdf" download="tracemonkey.pdf">Download tracemonkey.pdf (6 pages)</a>
+  </div>
+
+  <p>If JavaScript is disabled, or PDF.js fails to load, the embedded download link above remains visible. Progressive enhancement; the content never depends on JS.</p>
+
+  <p>The PDF used is Mozilla's canonical PDF.js test file (<a href="https://mozilla.github.io/pdf.js/web/compressed.tracemonkey-pldi-09.pdf">tracemonkey paper</a>), bundled at <code>./sample.pdf</code> for offline development.</p>
+
+  <script type="module">
+    import { Slipsheet } from '../packages/viewer/src/index.js';
+    Slipsheet.init();
+  </script>
+</body>
+</html>

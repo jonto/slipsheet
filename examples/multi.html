@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Slipsheet — multi-instance + lazy load</title>
+  <link rel="stylesheet" href="../packages/viewer/src/viewer.css">
+  <style>
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      max-width: 720px;
+      margin: 2rem auto;
+      padding: 0 1.5rem;
+      line-height: 1.55;
+      color: #2a2820;
+      background: #fafaf6;
+    }
+    h1 { font-weight: 600; letter-spacing: -0.02em; margin: 0 0 0.5rem; }
+    h2 { font-weight: 600; letter-spacing: -0.01em; margin-top: 2.5rem; }
+    p.lede { color: #6a655c; margin: 0 0 2rem; }
+    code {
+      background: #ede9df;
+      padding: 0.1em 0.35em;
+      border-radius: 0.25rem;
+      font: 0.9em ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    p { margin: 1.25rem 0; }
+    .filler {
+      color: #6a655c;
+      padding: 1.5rem;
+      background: #f4f1ea;
+      border-radius: 0.5rem;
+      text-align: center;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <h1>Slipsheet — multi-instance + lazy load</h1>
+  <p class="lede">Two embeds on one page. The first hydrates immediately (above the fold). The second is below the fold and waits for the IntersectionObserver to fire before fetching PDF.js or the file.</p>
+
+  <h2>Embed 1 — above the fold</h2>
+  <p>This one is in the viewport on initial paint, so it hydrates immediately. Use the prev/next buttons or arrow keys to navigate. Tab to the embed and press <code>Home</code> / <code>End</code> to jump to the first / last page.</p>
+
+  <div class="slipsheet" data-src="./sample.pdf" data-pages="6" data-filename="tracemonkey-1.pdf">
+    <a href="./sample.pdf" download="tracemonkey-1.pdf">Download tracemonkey-1.pdf (6 pages)</a>
+  </div>
+
+  <h2>Scroll down for embed 2</h2>
+  <div class="filler">↓ keep scrolling ↓</div>
+  <p>Some prose to push the second embed below the fold so the lazy-load behavior is observable. The viewer doesn't fetch PDF.js or the PDF file until the element scrolls within <code>200px</code> of the viewport — savings compound on long pages with multiple embeds.</p>
+  <p>Open DevTools → Network and watch the second PDF request fire only when you scroll close to it. The first PDF request fires immediately on page load (above-the-fold embed).</p>
+  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+  <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+  <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.</p>
+  <div class="filler">↓ almost there ↓</div>
+  <p>Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt.</p>
+
+  <h2>Embed 2 — below the fold (lazy)</h2>
+
+  <div class="slipsheet" data-src="./sample.pdf" data-pages="6" data-filename="tracemonkey-2.pdf">
+    <a href="./sample.pdf" download="tracemonkey-2.pdf">Download tracemonkey-2.pdf (6 pages)</a>
+  </div>
+
+  <p>Each embed has its own state. Navigating one doesn't affect the other.</p>
+
+  <script type="module">
+    import { Slipsheet } from '../packages/viewer/src/index.js';
+    Slipsheet.init();
+  </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+{
+  "name": "@slipsheet/viewer",
+  "version": "0.0.5",
+  "description": "Standalone PDF.js wrapper that hydrates .slipsheet markup into an interactive viewer. Independent of any rich-text editor.",
+  "license": "MIT",
+  "author": "Jamie Ontiveros <dev@ontiveros.me>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jonto/slipsheet.git",
+    "directory": "packages/viewer"
+  },
+  "bugs": {
+    "url": "https://github.com/jonto/slipsheet/issues"
+  },
+  "homepage": "https://github.com/jonto/slipsheet/tree/main/packages/viewer#readme",
+  "type": "module",
+  "main": "dist/viewer.min.js",
+  "module": "dist/viewer.min.js",
+  "style": "dist/viewer.min.css",
+  "exports": {
+    ".": "./dist/viewer.min.js",
+    "./style": "./dist/viewer.min.css",
+    "./src/index.js": "./src/index.js",
+    "./src/viewer.css": "./src/viewer.css",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "src/",
+    "dist/"
+  ],
+  "keywords": [
+    "pdf",
+    "viewer",
+    "pdfjs",
+    "slipsheet",
+    "embed",
+    "inline-pdf"
+  ],
+  "scripts": {
+    "test": "echo 'TODO: jsdom or playwright tests' && exit 0"
+  }
+}
