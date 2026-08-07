@@ -21,4 +21,4 @@ Then open http://localhost:8003/examples/basic.html in a browser. The server is 
 
 ## Assets
 
-- **`sample.pdf`** — Mozilla's canonical PDF.js test PDF (the tracemonkey paper, ~1MB, 6 pages). Bundled here so the examples work offline.
+- **`sample.pdf`** — Mozilla's canonical PDF.js test PDF (the tracemonkey paper, ~1MB, 14 pages). Bundled here so the examples work offline.

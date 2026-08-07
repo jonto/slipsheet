@@ -5,6 +5,11 @@ build/
 # Never published — see docs/internal/PLANNING.md.
 docs/internal/
 
+# Design context for the impeccable skill. Scaffolding for future design work,
+# not documentation for adopters.
+PRODUCT.md
+DESIGN.md
+
 # Note: packages/*/dist/ is intentionally NOT gitignored.
 # Committed so jsdelivr can serve the built bundle from the GitHub repo before
 # the first npm publish, and so examples/dist.html works without requiring a
