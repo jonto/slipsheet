@@ -2,6 +2,8 @@
 
 **LinkedIn-style inline PDF embeds for the web.** Two small, MIT-licensed JavaScript libraries that work together — or independently.
 
+**[See it working →](https://jonto.github.io/slipsheet/)** A real PDF, rendered by the viewer you'd install. The demo has a button that switches the viewer off so you can watch the fallback take over.
+
 In offset printing, a *slipsheet* is a clean sheet slipped between freshly printed pages to keep the ink from transferring. On the web, it's a plain-HTML markup contract for slipping a PDF panel *between* pieces of content — and a viewer that turns that markup into a polished, accessible reading experience.
 
 ```html
@@ -75,11 +77,19 @@ The upload handler is yours — slipsheet never talks to a backend. See [`packag
 
 ## Examples
 
+Live, no checkout required:
+
+- **[jonto.github.io/slipsheet](https://jonto.github.io/slipsheet/)** — the viewer on a real PDF, plus a toggle that disables it to show the fallback
+- **[Editor round-trip](https://jonto.github.io/slipsheet/examples/editor.html)** — HugeRTE + plugin + viewer, with an upload handler that works offline
+
+Or run them locally:
+
 ```bash
 npm run serve                       # static server on :8003
 # then open:
 #   examples/basic.html   — viewer, minimum working demo
 #   examples/editor.html  — full editor round-trip (HugeRTE + plugin + viewer)
+#   examples/multi.html   — two embeds, lazy-load gate on the second
 #   examples/dist.html    — same as basic, loading the bundled dist/
 ```
 
