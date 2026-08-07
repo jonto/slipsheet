@@ -75,6 +75,8 @@ The upload handler is yours — slipsheet never talks to a backend. See [`packag
 
 **Pre-1.0 (`0.x`).** Both packages are functional with working examples end-to-end; the public APIs may still change before `1.0`. Issues and feedback are welcome — that's what the `0.x` window is for.
 
+Contributions too: see [CONTRIBUTING.md](CONTRIBUTING.md) for the constraints that keep the plugin compatible across editors. Tests and CI are the biggest gap and the most useful thing anyone could add.
+
 ## Examples
 
 Live, no checkout required:
