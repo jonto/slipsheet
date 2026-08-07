@@ -67,14 +67,29 @@ User-provided strings (`src`, `filename`) are HTML-escaped before insertion to p
 
 The plugin uses only documented stable APIs that are present and identical in both HugeRTE 1.x and TinyMCE 6: `PluginManager.add`, `editor.ui.registry.{addButton,addIcon}`, `editor.notificationManager.open`, `editor.insertContent`, `editor.options.{register,get}`.
 
-## Allowing the markup through the editor's HTML sanitizer
+## Required editor configuration
 
-HugeRTE / TinyMCE 6 sanitizes editor content by default. The standardized `.slipsheet` markup uses non-standard `data-*` attributes that may get stripped unless allowed. Add to your `hugerte.init` config:
+Two settings. Without them the editor quietly damages the markup on save, and
+the damage only shows up for readers.
 
 ```js
-extended_valid_elements: 'div[class|data-src|data-pages|data-filename],a[href|download|target]',
+// 1. The editor sanitizes content by default and will strip the contract's
+//    data-* attributes and the contenteditable hint unless they are allowed.
+extended_valid_elements: 'div[class|data-src|data-pages|data-filename|contenteditable],a[href|download|target]',
 valid_children: '+div[a]',
+
+// 2. URL conversion is on by default. It rewrites the fallback link's href to
+//    be document-relative but leaves data-src untouched, so after a save the
+//    two point at different files: the viewer renders one PDF while the
+//    no-JS download link fetches another (usually a 404).
+convert_urls: false,
 ```
+
+`relative_urls: false` also fixes the second problem if you need URL conversion
+elsewhere in your content; `convert_urls: false` is the blunter, safer default.
+
+Both are verified in CI against HugeRTE 1.x and TinyMCE 6 by round-tripping the
+markup through each editor's serializer.
 
 ## Demo
 

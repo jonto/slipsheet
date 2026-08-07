@@ -39,7 +39,5 @@
   "peerDependencies": {
     "hugerte": "^1.0.0"
   },
-  "scripts": {
-    "test": "echo 'TODO: HugeRTE 1.x + TinyMCE 6 compatibility CI' && exit 0"
-  }
+  "scripts": {}
 }

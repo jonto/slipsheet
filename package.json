@@ -19,10 +19,12 @@
   ],
   "scripts": {
     "build": "node bin/build.mjs",
-    "test": "echo 'No tests configured yet.' && exit 0",
-    "serve": "python3 -m http.server 8003"
+    "test": "node --test",
+    "serve": "python3 -m http.server 8003",
+    "test:dist": "npm run build && git diff --exit-code -- packages/*/dist"
   },
   "devDependencies": {
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "playwright": "^1.62.1"
   }
 }

@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  # HugeRTE and TinyMCE ship on their own schedule. ARCHITECTURE.md commits to
+  # finding out within hours when a new editor release breaks the plugin, which
+  # only works if something runs without a push to trigger it.
+  schedule:
+    - cron: '17 6 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # 20 is the oldest maintained LTS; 22 is what development happens on.
+        node: [20, 22]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+
+      - run: npm ci
+
+      - name: Unit and contract tests
+        run: npm test
+
+  dist-is-current:
+    name: Committed dist matches src
+    runs-on: ubuntu-latest
+    # packages/*/dist is committed so jsDelivr can serve it straight from the
+    # repo and examples/dist.html works with no build step. That only holds if
+    # the committed output actually matches the source.
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Rebuild and check for drift
+        run: |
+          npm run build
+          if ! git diff --exit-code -- packages/*/dist; then
+            echo "::error::Committed dist/ does not match src/. Run 'npm run build' and commit the result."
+            exit 1
+          fi
+
+  editor-compat:
+    name: Plugin loads in ${{ matrix.editor }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - editor: hugerte@1
+            global: hugerte
+            cdn: https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js
+          - editor: tinymce@6
+            global: tinymce
+            cdn: https://cdn.jsdelivr.net/npm/tinymce@6/tinymce.min.js
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx --yes playwright@1 install --with-deps chromium
+
+      - name: Register the plugin against a real editor
+        env:
+          EDITOR_GLOBAL: ${{ matrix.global }}
+          EDITOR_CDN: ${{ matrix.cdn }}
+        run: node .github/scripts/editor-compat.mjs

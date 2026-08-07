@@ -31,8 +31,14 @@ pattern that `slipsheet_upload_handler` mirrors is theirs.
 **[esbuild](https://esbuild.github.io/)** — Evan Wallace, MIT. Produces the
 minified bundles and source maps.
 
+**[Playwright](https://playwright.dev/)** — Microsoft, Apache License 2.0.
+Drives a real browser in CI so the plugin can be loaded into actual HugeRTE and
+TinyMCE builds rather than mocks. A dev dependency only; it ships in neither
+package.
+
 **[jsDelivr](https://www.jsdelivr.com/)** — serves the packages and PDF.js to
-anyone using the no-build installation path, for free.
+anyone using the no-build installation path, for free. CI also pulls the editors
+themselves from jsDelivr to test against.
 
 ## The demo site
 

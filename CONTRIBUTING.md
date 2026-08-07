@@ -11,10 +11,14 @@ If you only read one section, read [The rules](#the-rules).
 ```bash
 git clone https://github.com/jonto/slipsheet.git
 cd slipsheet
-npm install          # installs esbuild, the only dev dependency
+npm install          # esbuild for builds, playwright for the editor compat check
 npm run build        # builds both packages into packages/*/dist/
+npm test             # unit and contract tests, no browser needed
 npm run serve        # static server on :8003
 ```
+
+Neither package has runtime dependencies; both dev dependencies are build and
+test tooling only.
 
 Then open `examples/basic.html` for the viewer alone, or `examples/editor.html`
 for the full editor round trip. The editor demo fakes its upload handler with
@@ -102,11 +106,25 @@ The viewer advertises keyboard navigation, screen reader announcements, and
 
 ## Verifying your change
 
-**There are no automated tests yet.** The `npm test` scripts are stubs that
-exit 0 without running anything. Do not read a passing `npm test` as a signal
-of any kind.
+```bash
+npm test                 # unit + contract tests (fast, no browser)
+npm run test:dist        # rebuilds and fails if committed dist/ drifted
+```
 
-Until that is fixed, verification is manual. For anything touching the viewer:
+CI additionally loads the built plugin into real HugeRTE 1.x and TinyMCE 6
+instances and round-trips the markup through each editor's serializer. You can
+run that locally:
+
+```bash
+npx playwright install chromium
+EDITOR_GLOBAL=hugerte EDITOR_CDN=https://cdn.jsdelivr.net/npm/hugerte@1/hugerte.min.js \
+  node .github/scripts/editor-compat.mjs
+```
+
+**What the tests do not cover.** There is no test of the viewer's actual
+rendering, navigation, fullscreen, or screen-reader behaviour; that needs a
+browser harness nobody has written yet. So for anything touching the viewer,
+the manual pass still matters:
 
 - [ ] `npm run build` succeeds
 - [ ] `examples/basic.html` renders page 1 and navigates with the toolbar
@@ -130,10 +148,11 @@ that does not hold.
 
 ## Especially welcome
 
-- **Tests and CI.** This is the biggest gap in the project. `ARCHITECTURE.md`
-  calls for a CI matrix against HugeRTE 1.x and TinyMCE 6 so that a breaking
-  editor release is caught within hours. It does not exist yet. If you want to
-  build it, that is probably the most valuable contribution available.
+- **Browser tests for the viewer.** The biggest remaining gap. Everything the
+  viewer actually does at runtime, rendering a page, navigating, entering
+  fullscreen, announcing page changes, falling back on a failed fetch, is
+  currently verified only by a human looking at it. A Playwright suite covering
+  those paths is the most valuable contribution available.
 - **Real-world bug reports.** The viewer has been exercised on a limited range
   of PDFs. Files that render badly are useful, especially with the PDF attached
   or linked.

@@ -39,7 +39,5 @@
     "embed",
     "inline-pdf"
   ],
-  "scripts": {
-    "test": "echo 'TODO: jsdom or playwright tests' && exit 0"
-  }
+  "scripts": {}
 }

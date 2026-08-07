@@ -4,6 +4,41 @@ All notable changes to this project will be documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Tests and CI
+
+- **Test suite added.** 36 tests, no browser required, run with `npm test` on Node's
+  built-in runner so no test framework was added as a dependency. Covers the markup
+  contract and its HTML escaping, cross-package agreement between what the plugin
+  writes and what the viewer reads, the fixed list of editor APIs the plugin is
+  allowed to touch, the integrity of the examples, and the presence of the required
+  editor settings in the docs.
+- **The `npm test` stubs are gone.** All three previously echoed a TODO and exited 0,
+  which meant any CI built on them would have reported success while verifying nothing.
+- **CI workflow** (`.github/workflows/ci.yml`): tests on Node 20 and 22, a check that
+  the committed `packages/*/dist` still matches `src`, and an editor compatibility job
+  that loads the built plugin into real HugeRTE 1.x and TinyMCE 6 via Playwright. Runs
+  on push, on pull requests, and weekly, so a breaking editor release surfaces without
+  anyone pushing a commit.
+
+### Fixed
+
+- **`convert_urls` corrupts the fallback link.** Found by the first run of the new
+  editor compatibility test. The editor's URL conversion is on by default and rewrites
+  the fallback `<a href>` to be document-relative, while leaving `data-src` untouched.
+  After a save the two disagree: the viewer renders one file and the no-JS download
+  link points at another, usually a 404.
+
+  This defeats the degradation guarantee the whole design rests on, and it fails
+  silently for precisely the readers who depend on the fallback.
+
+  **Adopter action required:** add `convert_urls: false` to your editor config.
+  `relative_urls: false` also works if you need URL conversion elsewhere in your
+  content. Both required settings are now documented together in the plugin README,
+  and CI asserts the saved `href` and `data-src` still match after a serializer
+  round-trip on both editors.
+
 ## [0.1.0] — 2026-08-06 — first public release
 
 Initial publish of both packages to npm, and the first release from the public

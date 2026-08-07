@@ -124,6 +124,9 @@
 
       // Allow our standardized markup through the editor's HTML sanitizer.
       extended_valid_elements: 'div[class|data-src|data-pages|data-filename|contenteditable],a[href|download|target]',
+      // Without this the editor rewrites the fallback link's href but leaves
+      // data-src alone, so the two disagree after a save.
+      convert_urls: false,
       valid_children: '+div[a]',
 
       // Demo upload handler. In production, this POSTs to a backend upload

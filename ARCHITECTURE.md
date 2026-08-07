@@ -282,9 +282,15 @@ about your storage, auth, or templating.
 4. **Load `@slipsheet/hugerte`** — CDN or vendored — and add `slipsheet` to your editor's
    `plugins` and `toolbar` config.
 5. **Wire `slipsheet_upload_handler`** to POST at your endpoint from step 2.
-6. **Allow the markup through the editor's serializer** via `extended_valid_elements` (see
-   the plugin README) — otherwise HugeRTE strips the `data-*` and `contenteditable`
-   attributes on save.
+6. **Configure the editor so it does not damage the markup on save.** Two settings, both
+   required, both documented in the plugin README:
+   - `extended_valid_elements` — otherwise the serializer strips the `data-*` and
+     `contenteditable` attributes.
+   - `convert_urls: false` — otherwise the editor rewrites the fallback link's `href` to be
+     document-relative while leaving `data-src` alone. The viewer then renders one file
+     while the no-JS download link points at another. This breaks the degradation guarantee
+     that the whole design rests on, and it breaks it silently, for exactly the readers who
+     depend on it most.
 7. *Optional:* show the toolbar button conditionally, if only some content types should
    accept PDFs.
 

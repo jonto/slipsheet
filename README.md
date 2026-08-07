@@ -58,8 +58,11 @@ hugerte.init({           // or tinymce.init on TinyMCE 6
     const { url, pages } = await myUpload(file, progress);
     return { src: url, pages, filename: file.name };
   },
-  // required so the editor keeps the embed's contenteditable="false" hint on save:
+  // Required. Keeps the embed's contenteditable="false" hint on save:
   extended_valid_elements: 'div[class|data-src|data-pages|data-filename|contenteditable],a[href|download|target]',
+  // Required. Without it the editor rewrites the fallback link's href but not
+  // data-src, so the download link and the viewer point at different files:
+  convert_urls: false,
 });
 ```
 
@@ -75,7 +78,7 @@ The upload handler is yours — slipsheet never talks to a backend. See [`packag
 
 **Pre-1.0 (`0.x`).** Both packages are functional with working examples end-to-end; the public APIs may still change before `1.0`. Issues and feedback are welcome — that's what the `0.x` window is for.
 
-Contributions too: see [CONTRIBUTING.md](CONTRIBUTING.md) for the constraints that keep the plugin compatible across editors. Tests and CI are the biggest gap and the most useful thing anyone could add.
+Contributions too: see [CONTRIBUTING.md](CONTRIBUTING.md) for the constraints that keep the plugin compatible across editors. CI verifies the markup contract and loads the plugin into real HugeRTE 1.x and TinyMCE 6 on every push; browser tests for the viewer's runtime behaviour are the biggest remaining gap.
 
 ## Examples
 

@@ -364,7 +364,15 @@ Slipsheet.init();   // hydrates every .slipsheet on the page</code></pre>
     const { url, pages } = await myUpload(file, progress);
     return { src: url, pages, filename: file.name };
   },
+  extended_valid_elements:
+    'div[class|data-src|data-pages|data-filename|contenteditable],a[href|download|target]',
+  convert_urls: false,
 });</code></pre>
+      <p>
+        Both of those last two options are required. The first keeps the editor
+        from stripping the embed's attributes on save; the second stops it
+        rewriting the fallback link to a different path than the viewer reads.
+      </p>
       <p>
         The upload handler is yours. slipsheet never talks to a backend, and has no
         opinion about where your files live.
