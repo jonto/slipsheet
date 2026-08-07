@@ -101,6 +101,8 @@ The full three-layer design, the plugin and viewer APIs, the editor-upgrade resi
 
 MIT — see [LICENSE](LICENSE).
 
+slipsheet is a thin layer over other people's work, chiefly [PDF.js](https://mozilla.github.io/pdf.js/) and [HugeRTE](https://hugerte.org/). See [ACKNOWLEDGEMENTS.md](ACKNOWLEDGEMENTS.md) for the full list.
+
 ---
 
 *slipsheet powers inline PDF reading on [SignalK.it](https://signalk.it). It's built to be host-agnostic — no adopter is a dependency.*

@@ -10,6 +10,11 @@ docs/internal/
 PRODUCT.md
 DESIGN.md
 
+# Local task board. Project management is the maintainer's business, not the
+# adopter's; contributors use GitHub Issues.
+kanban/
+KANBAN.md
+
 # Note: packages/*/dist/ is intentionally NOT gitignored.
 # Committed so jsdelivr can serve the built bundle from the GitHub repo before
 # the first npm publish, and so examples/dist.html works without requiring a
