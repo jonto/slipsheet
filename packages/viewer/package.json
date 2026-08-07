@@ -1,6 +1,6 @@
 {
   "name": "@slipsheet/viewer",
-  "version": "0.0.5",
+  "version": "0.1.0",
   "description": "Standalone PDF.js wrapper that hydrates .slipsheet markup into an interactive viewer. Independent of any rich-text editor.",
   "license": "MIT",
   "author": "Jamie Ontiveros <dev@ontiveros.me>",
@@ -13,6 +13,9 @@
     "url": "https://github.com/jonto/slipsheet/issues"
   },
   "homepage": "https://github.com/jonto/slipsheet/tree/main/packages/viewer#readme",
+  "publishConfig": {
+    "access": "public"
+  },
   "type": "module",
   "main": "dist/viewer.min.js",
   "module": "dist/viewer.min.js",

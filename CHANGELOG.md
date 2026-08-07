@@ -4,7 +4,28 @@ All notable changes to this project will be documented here. Format follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/); versioning follows
 [Semantic Versioning](https://semver.org/).
 
-## [Unreleased]
+## [0.1.0] — 2026-08-06 — first public release
+
+Initial publish of both packages to npm, and the first release from the public
+repository at https://github.com/jonto/slipsheet.
+
+- **`@slipsheet/viewer` 0.1.0** — supersedes the unpublished `0.0.1`–`0.0.5`
+  development line documented below. No functional change from `0.0.5`.
+- **`@slipsheet/hugerte` 0.1.0** — supersedes the unpublished `0.0.1`–`0.0.2`
+  development line. No functional change from `0.0.2`.
+
+Both packages start at the same version so the compatibility story stays simple:
+`0.1.x` of one is designed against `0.1.x` of the other. They remain independently
+useful and share no runtime — only the Layer 2 markup contract.
+
+Public APIs may still change before `1.0`; see the Status note in the README.
+
+---
+
+## Development history (pre-publication)
+
+The entries below document the incubation versions. They were never published to
+npm; they are kept for provenance.
 
 ### 2026-05-12 — `@slipsheet/hugerte` v0.0.2 — embed is non-editable
 
