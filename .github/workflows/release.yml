@@ -44,11 +44,12 @@ jobs:
         # and the failure mode without this is an opaque auth error.
         run: |
           npm install -g npm@latest
-          echo "npm $(npm --version)"
-          node -e "const [a,b,c]=process.env.V.split('.').map(Number);
-                   if (a<11 || (a===11 && (b<5 || (b===5 && c<1))))
-                     { console.error('npm >= 11.5.1 required for OIDC'); process.exit(1); }" \
-            V="$(npm --version)"
+          NPM_V="$(npm --version)"
+          echo "npm $NPM_V"
+          if [ "$(printf '%s\n%s\n' "$NPM_V" 11.5.1 | sort -V | head -1)" != "11.5.1" ]; then
+            echo "::error::npm >= 11.5.1 required for OIDC trusted publishing, have $NPM_V"
+            exit 1
+          fi
 
       - name: Resolve package and version
         id: target
@@ -72,7 +73,8 @@ jobs:
         # Guards against tagging a version that was never committed, which
         # would publish something other than what the tag claims.
         run: |
-          ACTUAL=$(npm pkg get version -w '${{ steps.target.outputs.package }}' | tr -d '"{}[:space:]' | sed 's/.*://')
+          PKG='${{ steps.target.outputs.package }}'
+          ACTUAL=$(node -p "require('./packages/${PKG##*/}/package.json').version")
           echo "tag says ${{ steps.target.outputs.version }}, package.json says $ACTUAL"
           [ "$ACTUAL" = "${{ steps.target.outputs.version }}" ] || {
             echo "::error::version mismatch: tag ${{ steps.target.outputs.version }} vs package.json $ACTUAL"
