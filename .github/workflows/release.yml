@@ -1,0 +1,106 @@
+name: Release
+
+# Publishes to npm via OIDC trusted publishing. There is no NPM_TOKEN and no
+# secret of any kind in this workflow: npm verifies the request came from this
+# repository and this workflow file. Configured per package at
+# npmjs.com -> package -> Settings -> Trusted Publisher.
+#
+# To release:
+#   npm pkg set version=X.Y.Z -w @slipsheet/<pkg>
+#   commit, then:
+#   git tag -a "@slipsheet/<pkg>@X.Y.Z" -m "..." && git push --follow-tags
+
+on:
+  push:
+    tags:
+      - '@slipsheet/*@*'
+  workflow_dispatch:
+    inputs:
+      package:
+        description: 'Package to publish, e.g. @slipsheet/hugerte'
+        required: true
+      version:
+        description: 'Version that must match package.json, e.g. 0.1.1'
+        required: true
+
+permissions:
+  contents: read
+  id-token: write      # required for OIDC; without it npm cannot verify the run
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - name: Upgrade npm for trusted publishing
+        # Node 22 bundles npm 10.x. OIDC trusted publishing needs >= 11.5.1,
+        # and the failure mode without this is an opaque auth error.
+        run: |
+          npm install -g npm@latest
+          echo "npm $(npm --version)"
+          node -e "const [a,b,c]=process.env.V.split('.').map(Number);
+                   if (a<11 || (a===11 && (b<5 || (b===5 && c<1))))
+                     { console.error('npm >= 11.5.1 required for OIDC'); process.exit(1); }" \
+            V="$(npm --version)"
+
+      - name: Resolve package and version
+        id: target
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            PKG='${{ inputs.package }}'
+            VER='${{ inputs.version }}'
+          else
+            # Tag shape: @slipsheet/hugerte@0.1.1 -> pkg=@slipsheet/hugerte ver=0.1.1
+            TAG='${{ github.ref_name }}'
+            PKG="${TAG%@*}"
+            VER="${TAG##*@}"
+          fi
+          echo "package=$PKG" >> "$GITHUB_OUTPUT"
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+          echo "Publishing $PKG@$VER"
+
+      - run: npm ci
+
+      - name: Version in package.json must match the tag
+        # Guards against tagging a version that was never committed, which
+        # would publish something other than what the tag claims.
+        run: |
+          ACTUAL=$(npm pkg get version -w '${{ steps.target.outputs.package }}' | tr -d '"{}[:space:]' | sed 's/.*://')
+          echo "tag says ${{ steps.target.outputs.version }}, package.json says $ACTUAL"
+          [ "$ACTUAL" = "${{ steps.target.outputs.version }}" ] || {
+            echo "::error::version mismatch: tag ${{ steps.target.outputs.version }} vs package.json $ACTUAL"
+            exit 1
+          }
+
+      - name: Test
+        run: npm test
+
+      - name: Build and confirm committed dist is current
+        run: |
+          npm run build
+          git diff --exit-code -- packages/*/dist || {
+            echo "::error::dist/ is stale. Run 'npm run build' and commit before tagging."
+            exit 1
+          }
+
+      - name: Publish
+        # No NODE_AUTH_TOKEN. Authentication is the OIDC identity of this run.
+        # npm attaches build provenance automatically when publishing this way.
+        run: npm publish -w '${{ steps.target.outputs.package }}'
+
+      - name: Confirm the registry serves it
+        run: |
+          for i in $(seq 1 10); do
+            OUT=$(npm view '${{ steps.target.outputs.package }}@${{ steps.target.outputs.version }}' version 2>/dev/null || true)
+            [ -n "$OUT" ] && { echo "registry serving $OUT"; exit 0; }
+            echo "not visible yet, retrying ($i/10)"; sleep 15
+          done
+          echo "::error::published but not visible on the registry after 150s"
+          exit 1
