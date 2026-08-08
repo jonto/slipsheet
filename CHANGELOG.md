@@ -22,7 +22,26 @@ All notable changes to this project will be documented here. Format follows
   on push, on pull requests, and weekly, so a breaking editor release surfaces without
   anyone pushing a commit.
 
+## [0.1.1] — 2026-08-07 — `@slipsheet/hugerte` required-config documentation
+
+Documentation only. No code change; `plugin.min.js` is byte-identical to 0.1.0.
+`@slipsheet/viewer` is unaffected and stays at 0.1.0.
+
+Cut because the README **bundled in the 0.1.0 tarball** told adopters to use a
+configuration that silently damages their content. Anyone who installed 0.1.0 and
+followed its README got both bugs below. Fixing the repo was not enough: npm serves
+the README from the published tarball, so the correction only reaches adopters via a
+release.
+
 ### Fixed
+
+- **`extended_valid_elements` was missing `contenteditable`.** The published README
+  listed `div[class|data-src|data-pages|data-filename]`, omitting the attribute that
+  keeps the embed atomic. Without it the caret can enter the embed, and subsequent
+  typing nests article body inside the `div` where the viewer destroys it at
+  hydration via `replaceChildren()`. This is the bug 0.0.2 fixed in code on
+  2026-05-12; the CHANGELOG said "adopter action required" but the README was never
+  updated to match, so the stale instructions shipped to npm.
 
 - **`convert_urls` corrupts the fallback link.** Found by the first run of the new
   editor compatibility test. The editor's URL conversion is on by default and rewrites
@@ -33,11 +52,17 @@ All notable changes to this project will be documented here. Format follows
   This defeats the degradation guarantee the whole design rests on, and it fails
   silently for precisely the readers who depend on the fallback.
 
-  **Adopter action required:** add `convert_urls: false` to your editor config.
-  `relative_urls: false` also works if you need URL conversion elsewhere in your
-  content. Both required settings are now documented together in the plugin README,
-  and CI asserts the saved `href` and `data-src` still match after a serializer
-  round-trip on both editors.
+  **Adopter action required:** add both settings to your editor config.
+  `relative_urls: false` also fixes the second if you need URL conversion elsewhere.
+  Both are now documented together under "Required editor configuration" in the
+  plugin README, and CI asserts the saved `href` and `data-src` still match after a
+  serializer round-trip on HugeRTE 1.x and TinyMCE 6.
+
+### Guard added
+
+`test/docs.test.js` now fails if any documented editor snippet drops either setting.
+The class of error was a doc that drifted from a code fix for three months without
+anything noticing.
 
 ## [0.1.0] — 2026-08-06 — first public release
 

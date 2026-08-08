@@ -1,6 +1,6 @@
 {
   "name": "@slipsheet/hugerte",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "HugeRTE editor plugin that adds a PDF upload button. Inserts standardized .slipsheet markup; pairs with @slipsheet/viewer for rendering. API-compatible with TinyMCE 6 (the last MIT-licensed TinyMCE).",
   "license": "MIT",
   "author": "Jamie Ontiveros <dev@ontiveros.me>",
